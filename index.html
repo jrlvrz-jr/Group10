@@ -1,1 +1,748 @@
-IPT G10
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102747">
+  <title>Barangay SK Management System</title>
+  <style>
+    :root {
+      --navy:#102747; --navy2:#193b68; --blue:#2867c7; --pale:#edf4ff;
+      --amber:#f0ad32; --ink:#1d2b3a; --muted:#657487; --line:#e3e9f0;
+      --paper:#fff; --bg:#f3f6fa; --green:#157347; --red:#b42318;
+      --shadow:0 8px 26px rgba(16,39,71,.07);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;color:var(--ink);background:var(--bg)}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+    .auth-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 90% 10%,#315c92 0,transparent 38%),var(--navy)}
+    .auth-card{width:min(100%,570px);background:var(--paper);border-radius:20px;padding:30px;box-shadow:0 25px 70px #07172d66}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-mark{width:44px;height:44px;display:grid;place-items:center;border-radius:13px;color:var(--navy);background:var(--amber);font-weight:900}
+    .brand h1{font-size:19px;margin:0;color:var(--navy)}
+    .brand p{margin:3px 0 0;font-size:12px;color:var(--muted)}
+    .auth-intro{margin:26px 0 18px}
+    .auth-intro h2{margin:0 0 6px;font-size:23px}
+    .auth-intro p{margin:0;color:var(--muted);line-height:1.5;font-size:14px}
+    .tabs{display:flex;gap:8px;padding:5px;background:#f0f3f7;border-radius:11px;margin:20px 0}
+    .tab{flex:1;border:0;border-radius:8px;padding:10px;color:var(--muted);background:transparent;font-weight:700}
+    .tab.active{color:var(--navy);background:#fff;box-shadow:0 2px 6px #10274712}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+    .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .field.full{grid-column:1/-1}
+    label{color:#435267;font-size:12px;font-weight:750}
+    input,select,textarea{width:100%;border:1px solid #d6dee8;background:#fff;color:var(--ink);border-radius:9px;padding:10px 11px;outline:none}
+    input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2867c71c}
+    textarea{min-height:100px;resize:vertical}
+    .btn{border:0;border-radius:9px;padding:10px 14px;font-weight:750;transition:.15s}
+    .btn:hover{transform:translateY(-1px);filter:brightness(.97)}
+    .btn-primary{color:#fff;background:var(--blue)}
+    .btn-navy{color:#fff;background:var(--navy)}
+    .btn-amber{color:#2b210e;background:var(--amber)}
+    .btn-light{color:var(--navy);background:#edf2f8}
+    .btn-danger{color:#fff;background:var(--red)}
+    .btn-small{padding:7px 10px;font-size:12px}
+    .wide{width:100%;margin-top:16px}
+    .app{min-height:100vh;display:grid;grid-template-columns:252px 1fr}
+    .sidebar{background:var(--navy);color:#fff;padding:20px 14px;display:flex;flex-direction:column}
+    .sidebar .brand h1{color:#fff}.sidebar .brand p{color:#b8c7da}
+    .profile-card{margin:24px 2px 18px;padding:13px;border:1px solid #ffffff20;background:#ffffff0b;border-radius:12px}
+    .profile-name{font-weight:800;font-size:14px}
+    .profile-meta{color:#c1ccda;font-size:11px;line-height:1.8;margin-top:5px}
+    .nav-label{color:#91a5bd;text-transform:uppercase;letter-spacing:.12em;font-weight:800;font-size:9px;padding:9px 10px 7px}
+    .nav-list{display:grid;gap:4px}
+    .nav-item{width:100%;display:flex;gap:10px;align-items:center;text-align:left;color:#d3deeb;border:0;padding:10px;border-radius:9px;background:transparent;font-size:12px;font-weight:650}
+    .nav-item:hover,.nav-item.active{color:#fff;background:#ffffff18}
+    .nav-icon{width:18px;text-align:center}
+    .sidebar-foot{margin-top:auto;padding:15px 8px 3px;color:#93a6bc;font-size:10px;line-height:1.5}
+    .main{min-width:0}
+    .topbar{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;gap:12px}
+    .topbar h2{margin:0;color:var(--navy);font-size:19px}
+    .top-actions{display:flex;align-items:center;gap:8px}
+    .content{padding:24px 26px 40px;max-width:1450px;margin:auto}
+    .page-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:19px}
+    .page-heading h3{margin:0 0 5px;color:var(--navy);font-size:21px}
+    .page-heading p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+    .grid{display:grid;gap:16px}
+    .stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}
+    .two-col{grid-template-columns:1.15fr .85fr}
+    .card{min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:17px;box-shadow:var(--shadow)}
+    .stat-card{display:flex;gap:12px;align-items:center}
+    .stat-icon{flex:0 0 40px;height:40px;display:grid;place-items:center;border-radius:12px;color:var(--blue);background:var(--pale);font-size:18px}
+    .stat-value{color:var(--navy);font-size:22px;font-weight:850}
+    .stat-label{margin-top:2px;color:var(--muted);font-size:11px}
+    .card-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 13px;color:var(--navy);font-size:15px}
+    .card-title small{font-size:11px;color:var(--muted);font-weight:500}
+    .hero{background:linear-gradient(120deg,#102747,#24558e);color:#fff;border-radius:15px;padding:23px;margin-bottom:18px;position:relative;overflow:hidden}
+    .hero:after{content:"✦";position:absolute;right:24px;top:-25px;font-size:150px;opacity:.08}
+    .hero h3,.hero p,.hero .btn{position:relative}
+    .hero h3{margin:0 0 7px;font-size:20px}
+    .hero p{margin:0;color:#d9e7f7;max-width:730px;font-size:13px;line-height:1.5}
+    .hero .btn{margin-top:15px}
+    .table-wrap{width:100%;overflow-x:auto}
+    table{border-collapse:collapse;width:100%;min-width:620px;font-size:12px}
+    th{text-align:left;color:#66758a;text-transform:uppercase;letter-spacing:.04em;font-size:10px;padding:10px 9px;background:#f8fafc;border-bottom:1px solid var(--line)}
+    td{padding:11px 9px;border-bottom:1px solid #edf1f5;vertical-align:middle}
+    tr:last-child td{border-bottom:0}
+    .badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap;background:#edf2f7;color:#46576c}
+    .badge-blue{background:#e8f1ff;color:#2355a0}.badge-green{background:#e6f5ee;color:#176844}
+    .badge-amber{background:#fff4dc;color:#8a5a00}.badge-red{background:#feeceb;color:#a52a21}
+    .muted{color:var(--muted)}.small{font-size:11px}
+    .feed{display:grid;gap:12px}
+    .issue-card{border:1px solid var(--line);border-radius:11px;padding:14px;background:#fff}
+    .issue-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .issue-text{font-weight:750;color:var(--navy);line-height:1.45}
+    .issue-meta{display:flex;flex-wrap:wrap;gap:7px 12px;margin-top:8px;color:var(--muted);font-size:11px}
+    .issue-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+    .recommendation{border:1px solid #d6e5f8;background:#f7faff;border-radius:12px;padding:16px;margin-top:14px}
+    .recommendation h4{color:var(--navy);margin:7px 0;font-size:17px}
+    .recommendation p{font-size:12px;line-height:1.55;color:#4a5b70}
+    .recommendation ol{padding-left:19px;margin:8px 0;color:#46576c;font-size:12px;line-height:1.65}
+    .rec-meta{display:flex;flex-wrap:wrap;gap:8px;margin:11px 0}
+    .toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-bottom:13px}
+    .toolbar input,.toolbar select{width:auto;min-width:180px}
+    .empty{color:var(--muted);text-align:center;padding:24px 12px;font-size:13px}
+    .official-card{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:12px 0}
+    .official-card:last-child{border-bottom:0}
+    .avatar{width:37px;height:37px;border-radius:50%;display:grid;place-items:center;background:var(--pale);color:var(--blue);font-weight:850}
+    .toast{position:fixed;right:20px;bottom:20px;z-index:20;background:var(--navy);color:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow);font-size:13px;max-width:min(90vw,380px)}
+    .mobile-menu{display:none}
+    .pill-note{border-left:3px solid var(--amber);padding:9px 11px;background:#fff9eb;color:#70531e;font-size:11px;line-height:1.5;border-radius:0 8px 8px 0}
+    @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
+    @media(max-width:760px){
+      .app{grid-template-columns:1fr}
+      .sidebar{position:fixed;z-index:10;inset:0 auto 0 0;width:265px;transform:translateX(-105%);transition:transform .2s;box-shadow:15px 0 40px #07172d33}
+      .sidebar.open{transform:translateX(0)}.mobile-menu{display:inline-flex}
+      .topbar{height:62px;padding:0 14px}.topbar h2{font-size:16px}
+      .top-actions .btn{padding:8px;font-size:11px}.content{padding:18px 13px 30px}
+      .stats{gap:10px}.card{padding:14px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}
+    }
+    @media(max-width:420px){.stats{grid-template-columns:1fr 1fr}.stat-card{padding:10px}.stat-value{font-size:18px}.stat-icon{flex-basis:34px;height:34px}.auth-card{padding:20px}.reset-label{display:none}}
+    @media print{
+      body{background:#fff}.sidebar,.topbar,.no-print,.btn,.toolbar,.hero{display:none!important}
+      .app{display:block}.content{padding:0;max-width:none}.card{box-shadow:none;break-inside:avoid;border:1px solid #bbb}
+      table{min-width:0}
+    }
+  </style>
+</head>
+<body>
+  <div id="authView" class="auth-wrap">
+    <section class="auth-card">
+      <div class="brand"><div class="brand-mark">SK</div><div><h1>Barangay SK Hub</h1><p>Sangguniang Kabataan Management System</p></div></div>
+      <div class="auth-intro"><h2 id="authTitle">Welcome back</h2><p id="authSubtitle">Sign in to find community solutions and connect with your SK.</p></div>
+      <div class="tabs"><button class="tab active" id="loginTab" type="button">Login</button><button class="tab" id="registerTab" type="button">Registration</button></div>
+      <form id="loginForm">
+        <div class="form-grid">
+          <div class="field full"><label for="loginUsername">Username</label><input id="loginUsername" required autocomplete="username"></div>
+          <div class="field full"><label for="loginPassword">Password</label><input id="loginPassword" type="password" required autocomplete="current-password"></div>
+        </div>
+        <button class="btn btn-primary wide" type="submit">Log in</button>
+      </form>
+      <form id="registerForm" class="hidden">
+        <div class="form-grid">
+          <div class="field full"><label for="regName">Full Name</label><input id="regName" required maxlength="90"></div>
+          <div class="field"><label for="regAge">Age (15–30)</label><input id="regAge" type="number" min="15" max="30" required></div>
+          <div class="field"><label for="regPurok">Purok / Sitio</label>
+            <select id="regPurok" required><option value="">Select purok</option><option>Purok 1</option><option>Purok 2</option><option>Purok 3</option><option>Purok 4</option><option>Purok 5</option></select>
+          </div>
+          <div class="field"><label for="regRole">Role</label>
+            <select id="regRole" required><option value="">Select role</option><option>Youth Member</option><option>SK Kagawad / Committee Head</option><option>SK Chairperson / Admin</option></select>
+          </div>
+          <div class="field full hidden" id="committeeField"><label for="regCommittee">Committee / Position</label>
+            <select id="regCommittee"><option value="">Select committee / position</option><option>Environment & Sanitation</option><option>Sports & Recreation</option><option>Education & Digital Skills</option><option>Health & Mental Wellness</option><option>Peace & Order</option><option>Infrastructure</option><option>SK Chairperson</option></select>
+          </div>
+          <div class="field"><label for="regUsername">Username</label><input id="regUsername" required minlength="3" autocomplete="username"></div>
+          <div class="field"><label for="regPassword">Password</label><input id="regPassword" type="password" required minlength="6" autocomplete="new-password"></div>
+        </div>
+        <button class="btn btn-primary wide" type="submit">Create account</button>
+      </form>
+    </section>
+  </div>
+
+  <div id="appView" class="app hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="brand"><div class="brand-mark">SK</div><div><h1>Barangay SK Hub</h1><p>Community • Projects • Youth</p></div></div>
+      <div id="profileCard" class="profile-card"></div>
+      <div class="nav-label">Workspace</div><nav id="navList" class="nav-list"></nav>
+      <div class="sidebar-foot">Youth participation and transparent community programs.</div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div style="display:flex;align-items:center;gap:11px"><button id="mobileMenu" class="btn btn-light mobile-menu" type="button" aria-label="Open menu">☰</button><h2 id="topTitle">Dashboard</h2></div>
+        <div class="top-actions"><button id="resetBtn" class="btn btn-light btn-small" type="button">↻ <span class="reset-label">Reset System Data</span></button><button id="logoutBtn" class="btn btn-navy btn-small" type="button">Log out</button></div>
+      </header>
+      <div id="content" class="content"></div>
+    </main>
+  </div>
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEY = "barangaySkHub.v2";
+      const ROLES = {
+        youth: "Youth Member",
+        kagawad: "SK Kagawad / Committee Head",
+        admin: "SK Chairperson / Admin"
+      };
+      const NAV = [
+        ["dashboard", "▦", "Dashboard"],
+        ["finder", "⌕", "AI Issue & Project Finder"],
+        ["youth", "♙", "KK Youth Profiling"],
+        ["projects", "▤", "SK Projects & Budget"],
+        ["events", "◷", "Events & Attendance"],
+        ["announcements", "▣", "SK Announcements"],
+        ["officials", "♧", "Officials & Committees"],
+        ["activities", "☷", "Committee Activities"],
+        ["reports", "▧", "Reports & Transparency"]
+      ];
+      const CATEGORIES = [
+        {name:"Environment & Sanitation", words:["basura","waste","garbage","trash","litter","creek","drain","kanal","marumi","clean","pollution","recycle","flood","kalat"]},
+        {name:"Sports & Recreation", words:["basketball","court","sports","laro","playground","recreation","volleyball","gym","park","laruan"]},
+        {name:"Education & Digital Skills", words:["school","education","study","internet","computer","digital","learning","tutorial","students","wifi","educational","programs","kabataan","aral"]},
+        {name:"Health & Mental Wellness", words:["health","mental","stress","clinic","doctor","wellness","medical","gamot","kalusugan","counseling"]},
+        {name:"Peace, Safety & Infrastructure", words:["light","streetlight","ilaw","safety","safe","crime","road","street","sidewalk","peace","security","accident","infrastructure","kulang"]}
+      ];
+      const IDEAS = {
+        "Environment & Sanitation":["Linis-Purok: Creek and Community Clean-Up","Organize clean-up drives, waste segregation, and coordination with barangay sanitation services.",["Map priority dumping areas with youth volunteers.","Run a purok clean-up and information drive.","Set up monitoring and coordinate waste collection with the barangay."],"₱5,000–₱25,000"],
+        "Sports & Recreation":["Laro ng Kabataan: Community Sports Access Program","Improve access to safe, inclusive recreation through youth-led sports activities and basic facility improvements.",["Consult young residents and inspect the facility.","Schedule inclusive sports sessions and tournaments.","Track participation and identify maintenance needs."],"₱10,000–₱50,000"],
+        "Education & Digital Skills":["Kabataan Digital Learning and Skills Sessions","Provide youth with accessible learning sessions, shared digital resources, and skills workshops.",["Survey learners and available community resources.","Schedule tutorials or digital skills workshops.","Review attendance and learner feedback."],"₱8,000–₱40,000"],
+        "Health & Mental Wellness":["Kabataan Alaga: Youth Wellness and Health Outreach","Connect young people with health information, wellness activities, and referral pathways.",["Consult youth and identify suitable partner health workers.","Hold an information or wellness session.","Collect feedback and share referral resources."],"₱8,000–₱35,000"],
+        "Peace, Safety & Infrastructure":["Ligtas na Purok: Community Safety Improvement","Address safety concerns through community consultation, hazard mapping, and coordination with barangay partners.",["Map concerns and confirm locations with residents.","Prioritize practical actions with barangay partners.","Monitor concerns and communicate progress."],"₱15,000–₱100,000"],
+        "General Community Concern":["Kabataan Community Action Project","Bring youth and barangay partners together to validate the concern and deliver a practical response.",["Consult affected residents and verify the issue.","Agree on a focused community action with partners.","Track progress and report results to the community."],"₱5,000–₱50,000"]
+      };
+
+      const emptyData = () => ({version:2, users:[], issues:[], projects:[], events:[], announcements:[], activities:[]});
+      let data = loadData();
+      let currentUser = null;
+      let activePage = "dashboard";
+      let latestAnalysis = null;
+      let issueFilter = "";
+      let categoryFilterValue = "";
+      let toastTimer;
+
+      function loadData() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+          return saved && typeof saved === "object" ? {...emptyData(), ...saved} : emptyData();
+        } catch { return emptyData(); }
+      }
+      function saveData() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+        catch { notify("Unable to save. Browser storage may be full."); }
+      }
+      function uid() {
+        return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+      function esc(value) {
+        return String(value ?? "").replace(/[&<>"']/g, ch => ({
+          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+        }[ch]));
+      }
+      function isAdmin() { return currentUser?.role === ROLES.admin; }
+      function canManage() { return [ROLES.kagawad, ROLES.admin].includes(currentUser?.role); }
+      function money(value) { return "₱" + Number(value || 0).toLocaleString("en-PH"); }
+      function notify(message) {
+        const node = document.getElementById("toast");
+        node.textContent = message;
+        node.classList.remove("hidden");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => node.classList.add("hidden"), 3200);
+      }
+      function roleClass(role) {
+        return role === ROLES.admin ? "badge-amber" : role === ROLES.kagawad ? "badge-blue" : "badge-green";
+      }
+
+      const authView = document.getElementById("authView");
+      const appView = document.getElementById("appView");
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+      const loginTab = document.getElementById("loginTab");
+      const registerTab = document.getElementById("registerTab");
+      const regRole = document.getElementById("regRole");
+
+      function showAuthTab(tab) {
+        const registering = tab === "register";
+        loginTab.classList.toggle("active", !registering);
+        registerTab.classList.toggle("active", registering);
+        loginForm.classList.toggle("hidden", registering);
+        registerForm.classList.toggle("hidden", !registering);
+        document.getElementById("authTitle").textContent = registering ? "Join your SK community" : "Welcome back";
+        document.getElementById("authSubtitle").textContent = registering
+          ? "Create an account to take part in youth programs and community solutions."
+          : "Sign in to find community solutions and connect with your SK.";
+      }
+      loginTab.addEventListener("click", () => showAuthTab("login"));
+      registerTab.addEventListener("click", () => showAuthTab("register"));
+      regRole.addEventListener("change", () => {
+        const needsCommittee = [ROLES.kagawad, ROLES.admin].includes(regRole.value);
+        document.getElementById("committeeField").classList.toggle("hidden", !needsCommittee);
+        document.getElementById("regCommittee").required = needsCommittee;
+      });
+
+      registerForm.addEventListener("submit", event => {
+        event.preventDefault();
+        const name = document.getElementById("regName").value.trim();
+        const age = Number(document.getElementById("regAge").value);
+        const purok = document.getElementById("regPurok").value;
+        const role = regRole.value;
+        const committee = document.getElementById("regCommittee").value;
+        const username = document.getElementById("regUsername").value.trim();
+        const password = document.getElementById("regPassword").value;
+        if (age < 15 || age > 30) return notify("Age must be between 15 and 30.");
+        if (data.users.some(user => user.username.toLowerCase() === username.toLowerCase())) return notify("That username is already registered.");
+        if (!Object.values(ROLES).includes(role)) return notify("Choose a valid role.");
+        if ([ROLES.kagawad, ROLES.admin].includes(role) && !committee) return notify("Select a committee or position.");
+        data.users.push({
+          id:uid(), name, age, purok, role, committee:committee || "",
+          username, password, verified:role !== ROLES.youth,
+          createdAt:new Date().toISOString()
+        });
+        saveData();
+        registerForm.reset();
+        document.getElementById("committeeField").classList.add("hidden");
+        document.getElementById("regCommittee").required = false;
+        showAuthTab("login");
+        document.getElementById("loginUsername").value = username;
+        notify("Account created. You can now log in.");
+      });
+
+      loginForm.addEventListener("submit", event => {
+        event.preventDefault();
+        const username = document.getElementById("loginUsername").value.trim().toLowerCase();
+        const password = document.getElementById("loginPassword").value;
+        const user = data.users.find(item => item.username.toLowerCase() === username && item.password === password);
+        if (!user) return notify("Account not found or password is incorrect. Register first if you are new.");
+        currentUser = user;
+        latestAnalysis = null;
+        loginForm.reset();
+        authView.classList.add("hidden");
+        appView.classList.remove("hidden");
+        renderApp();
+      });
+
+      function logout() {
+        currentUser = null;
+        activePage = "dashboard";
+        latestAnalysis = null;
+        appView.classList.add("hidden");
+        authView.classList.remove("hidden");
+        showAuthTab("login");
+      }
+      document.getElementById("logoutBtn").addEventListener("click", logout);
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        if (!confirm("Reset all SK Management System data in this browser? This cannot be undone.")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        data = emptyData();
+        logout();
+        notify("System data has been reset.");
+      });
+      document.getElementById("mobileMenu").addEventListener("click", () => document.getElementById("sidebar").classList.toggle("open"));
+
+      function pageHeading(title, description, actions="") {
+        return `<div class="page-heading"><div><h3>${title}</h3><p>${description}</p></div>${actions}</div>`;
+      }
+      function stat(label, value, icon) {
+        return `<div class="card stat-card"><div class="stat-icon">${icon}</div><div><div class="stat-value">${value}</div><div class="stat-label">${label}</div></div></div>`;
+      }
+      function visibleNav() {
+        return NAV.filter(([key]) => {
+          if (key === "activities") return canManage();
+          if (key === "reports") return isAdmin();
+          return true;
+        });
+      }
+      function renderApp() {
+        if (!currentUser) return;
+        document.getElementById("profileCard").innerHTML =
+          `<div class="profile-name">${esc(currentUser.name)}</div>
+          <div class="profile-meta"><span class="badge ${roleClass(currentUser.role)}">${esc(currentUser.role)}</span><br>
+          ${esc(currentUser.purok)}${currentUser.role === ROLES.youth && !currentUser.verified ? "<br><span style='color:#ffd47d'>Account pending verification</span>" : ""}</div>`;
+        document.getElementById("navList").innerHTML = visibleNav().map(([key,icon,label]) =>
+          `<button type="button" class="nav-item ${activePage === key ? "active" : ""}" data-page="${key}"><span class="nav-icon">${icon}</span>${label}</button>`
+        ).join("");
+        document.getElementById("topTitle").textContent = NAV.find(item => item[0] === activePage)?.[2] || "Dashboard";
+        const renderers = {
+          dashboard:renderDashboard, finder:renderFinder, youth:renderYouth, projects:renderProjects,
+          events:renderEvents, announcements:renderAnnouncements, officials:renderOfficials,
+          activities:renderActivities, reports:renderReports
+        };
+        document.getElementById("content").innerHTML = (renderers[activePage] || renderDashboard)();
+        bindPage();
+      }
+
+      function renderDashboard() {
+        const upcoming = data.events.filter(event => new Date(event.date + "T23:59:59") >= new Date()).length;
+        const approved = data.projects.filter(project => ["Approved","Completed"].includes(project.status)).length;
+        const youthCount = data.users.filter(user => user.role === ROLES.youth).length;
+        const topIssues = [...data.issues].sort((a,b) => b.upvotes.length-a.upvotes.length).slice(0,5);
+        const purokRows = Array.from({length:5},(_,i)=>`Purok ${i+1}`).map(purok => {
+          return `<tr><td>${purok}</td><td>${data.users.filter(user=>user.purok===purok).length}</td><td>${data.issues.filter(issue=>issue.purok===purok).length}</td></tr>`;
+        }).join("");
+        return `<section class="hero"><h3>Ideas from youth. Action for the community.</h3>
+          <p>Describe a concern in English, Filipino, or Taglish. Find similar reports and explore a practical youth project recommendation.</p>
+          <button type="button" class="btn btn-amber" data-goto="finder">✦ Find a Community Solution</button></section>
+          <div class="grid stats">
+            ${stat("Total Registered Youth",youthCount,"♙")}
+            ${stat("Reported Community Issues",data.issues.length,"⌕")}
+            ${stat("Approved SK Projects",approved,"▤")}
+            ${stat("Upcoming Events",upcoming,"◷")}
+          </div>
+          <div class="grid two-col">
+            <section class="card"><h4 class="card-title">Top Trending Community Issues <small>Ranked by upvotes</small></h4>
+              ${topIssues.length?`<div class="feed">${topIssues.map(issue=>issueCard(issue,false)).join("")}</div>`:`<div class="empty">No community issues have been reported yet.</div>`}
+            </section>
+            <section class="card"><h4 class="card-title">Purok-by-Purok Snapshot</h4>
+              <div class="table-wrap"><table><thead><tr><th>Purok</th><th>Registered users</th><th>Issues</th></tr></thead><tbody>${purokRows}</tbody></table></div>
+              ${isAdmin()?`<button class="btn btn-light btn-small no-print" data-action="print-report" style="margin-top:12px">Print / Export Summary Report</button>`:""}
+            </section>
+          </div>`;
+      }
+
+      function normalizeWords(text) {
+        const stop = new Set(["the","a","an","and","or","is","are","near","in","at","to","of","sa","ang","ng","na","mga","may","yung","nasa","dito","doon","for","with","this","that","there","here"]);
+        return String(text||"").toLowerCase().replace(/[^a-z0-9\u00C0-\u024F\u1E00-\u1EFF\s]/gi," ")
+          .split(/\s+/).filter(word=>word.length>2&&!stop.has(word));
+      }
+      function similarity(a,b) {
+        const left=new Set(normalizeWords(a)), right=new Set(normalizeWords(b));
+        if(!left.size||!right.size)return 0;
+        const common=[...left].filter(word=>right.has(word)).length;
+        return Math.round(common/new Set([...left,...right]).size*100);
+      }
+      function detectCategory(text) {
+        const input=String(text||"").toLowerCase();
+        let best={name:"General Community Concern",score:0};
+        CATEGORIES.forEach(category=>{
+          const score=category.words.reduce((sum,word)=>sum+(input.includes(word)?1:0),0);
+          if(score>best.score)best={name:category.name,score};
+        });
+        return best.name;
+      }
+      function makeRecommendation(text,category,purok) {
+        const idea=IDEAS[category]||IDEAS["General Community Concern"];
+        const areas=[...new Set(data.issues.filter(issue=>similarity(issue.text,text)>=20).map(issue=>issue.purok))];
+        if(purok&&!areas.includes(purok))areas.unshift(purok);
+        return {title:idea[0],overview:idea[1],phases:idea[2],budget:idea[3],affected:areas.join(", ")||"To be confirmed"};
+      }
+      function renderFinder() {
+        const choices=[...new Set(data.issues.map(issue=>issue.category))].sort();
+        const found=data.issues.filter(issue=>
+          (!issueFilter||`${issue.text} ${issue.authorName} ${issue.purok}`.toLowerCase().includes(issueFilter.toLowerCase()))&&
+          (!categoryFilterValue||issue.category===categoryFilterValue)
+        ).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+        return `${pageHeading("AI Community Issue Search & Project Recommender","Explore similar concerns and turn a community problem into an actionable youth project.")}
+          <div class="grid two-col">
+            <section class="card"><h4 class="card-title">Describe a community problem <span class="badge badge-blue">English · Filipino · Taglish</span></h4>
+              <form id="analyzeForm"><div class="field"><label for="issueInput">What is happening, and where?</label>
+                <textarea id="issueInput" required maxlength="600" placeholder="Example: maraming nakatambak na basura sa creek near Purok 2..."></textarea></div>
+                <button class="btn btn-primary" type="submit" style="margin-top:12px">✦ Analyze issue</button>
+              </form><div id="analysisResult">${latestAnalysis?renderAnalysis(latestAnalysis):""}</div>
+            </section>
+            <section class="card"><h4 class="card-title">Issue matching</h4>
+              <p class="muted small" style="line-height:1.7">Matching uses an in-browser keyword category detector and text-overlap similarity score. Percentages are estimates and do not guarantee reports describe the same event.</p>
+              <div class="pill-note">Issue descriptions and authors are visible to signed-in users. Avoid posting private or sensitive information.</div>
+            </section>
+          </div>
+          <section class="card" style="margin-top:16px"><h4 class="card-title">Community Issue Feed <small>${found.length} report${found.length===1?"":"s"}</small></h4>
+            <div class="toolbar no-print"><input id="issueSearch" placeholder="Search reports..." value="${esc(issueFilter)}">
+              <select id="categoryFilter"><option value="">All categories</option>${choices.map(category=>`<option value="${esc(category)}" ${category===categoryFilterValue?"selected":""}>${esc(category)}</option>`).join("")}</select></div>
+            <div class="feed" id="issueFeed">${found.length?found.map(issue=>issueCard(issue,true)).join(""):`<div class="empty">No issues match these filters yet.</div>`}</div>
+          </section>`;
+      }
+      function renderAnalysis(analysis) {
+        const similar=data.issues.filter(issue=>issue.purok!==currentUser.purok)
+          .map(issue=>({issue,score:similarity(analysis.text,issue.text)}))
+          .filter(item=>item.score>=10).sort((a,b)=>b.score-a.score).slice(0,5);
+        const rec=analysis.recommendation;
+        return `<div class="recommendation"><span class="badge badge-blue">Detected category: ${esc(analysis.category)}</span>
+          <h4>Similar problems in other puroks</h4>
+          ${similar.length?similar.map(({issue,score})=>`<div class="issue-card" style="margin-top:9px">
+            <div class="issue-top"><div class="issue-text">${esc(issue.text)}</div><span class="badge badge-amber">${score}% match</span></div>
+            <div class="issue-meta"><span>📍 ${esc(issue.purok)}</span><span>Reported by ${esc(issue.authorName)}</span></div>
+            <div class="issue-actions"><button type="button" class="btn btn-light btn-small" data-action="upvote" data-id="${esc(issue.id)}">👍 Same Problem Here (${issue.upvotes.length})</button></div></div>`).join(""):`<p class="muted small">No similar report from another purok was found yet.</p>`}
+          <h4 style="margin-top:17px">Suggested SK Project</h4><strong>${esc(rec.title)}</strong><p>${esc(rec.overview)}</p>
+          <div class="rec-meta"><span class="badge badge-amber">Estimated: ${esc(rec.budget)}</span><span class="badge">Affected: ${esc(rec.affected)}</span></div>
+          <strong class="small">Phased action plan</strong><ol>${rec.phases.map(phase=>`<li>${esc(phase)}</li>`).join("")}</ol>
+          <div class="issue-actions"><button type="button" class="btn btn-primary btn-small" data-action="post-issue">Post the Issue</button>
+          ${isAdmin()?`<button type="button" class="btn btn-navy btn-small" data-action="adopt-analysis">Adopt as Official SK Project</button>`:""}</div>
+        </div>`;
+      }
+      function issueCard(issue,actions=true) {
+        const voted=issue.upvotes.includes(currentUser.id);
+        return `<article class="issue-card"><div class="issue-top"><div class="issue-text">${esc(issue.text)}</div><span class="badge badge-blue">${esc(issue.category)}</span></div>
+          <div class="issue-meta"><span>📍 ${esc(issue.purok)}</span><span>By ${esc(issue.authorName)}</span><span>${new Date(issue.createdAt).toLocaleDateString()}</span></div>
+          ${actions?`<div class="issue-actions"><button type="button" class="btn ${voted?"btn-amber":"btn-light"} btn-small" data-action="upvote" data-id="${esc(issue.id)}">${voted?"✓ Same Problem Here":"👍 Same Problem Here"} (${issue.upvotes.length})</button>
+          ${isAdmin()?`<button type="button" class="btn btn-light btn-small" data-action="delete-issue" data-id="${esc(issue.id)}">Delete</button>`:""}</div>`:`<div class="issue-meta"><span>👍 ${issue.upvotes.length} confirmations</span></div>`}
+        </article>`;
+      }
+
+      function renderYouth() {
+        const users=data.users.filter(user=>user.role===ROLES.youth).sort((a,b)=>a.name.localeCompare(b.name));
+        return `${pageHeading("Katipunan ng Kabataan (KK) Youth Profiling","Search the registered youth directory and review account verification status.")}
+          <section class="card"><div class="toolbar no-print"><input id="youthSearch" placeholder="Search name or purok...">
+            <select id="youthPurokFilter"><option value="">All puroks</option>${Array.from({length:5},(_,i)=>`<option>Purok ${i+1}</option>`).join("")}</select>
+            <span class="muted small">${users.length} youth account${users.length===1?"":"s"}</span></div>
+            <div class="table-wrap"><table><thead><tr><th>Full name</th><th>Age</th><th>Purok</th><th>Role</th><th>Verification</th>${isAdmin()?"<th>Action</th>":""}</tr></thead>
+            <tbody>${users.length?users.map(user=>`<tr data-youth-row data-name="${esc(user.name.toLowerCase())}" data-purok="${esc(user.purok)}">
+              <td><strong>${esc(user.name)}</strong></td><td>${esc(user.age)}</td><td>${esc(user.purok)}</td><td><span class="badge ${roleClass(user.role)}">${esc(user.role)}</span></td>
+              <td><span class="badge ${user.verified?"badge-green":"badge-amber"}">${user.verified?"Verified":"Pending"}</span></td>
+              ${isAdmin()?`<td>${user.verified?"":`<button class="btn btn-light btn-small" data-action="verify-user" data-id="${esc(user.id)}">Verify</button>`}</td>`:""}
+            </tr>`).join(""):`<tr><td colspan="${isAdmin()?6:5}" class="empty">No youth accounts registered yet.</td></tr>`}</tbody></table></div>
+          </section>`;
+      }
+
+      function renderProjects() {
+        return `${pageHeading("SK Projects & Budget (PPA)","Track Programs, Projects & Activities, funding, target areas, and implementation status.",
+          isAdmin()?`<button class="btn btn-light btn-small no-print" data-action="print-report">Print / Export Summary Report</button>`:"")}
+          ${isAdmin()?`<section class="card" style="margin-bottom:16px"><h4 class="card-title">Add an official SK project</h4>
+            <form id="projectForm" class="form-grid">
+              <div class="field"><label for="projectTitle">Project title</label><input id="projectTitle" required maxlength="120"></div>
+              <div class="field"><label for="projectCategory">Category</label><select id="projectCategory" required>${CATEGORIES.map(c=>`<option>${esc(c.name)}</option>`).join("")}<option>General Community Concern</option></select></div>
+              <div class="field"><label for="projectArea">Target area</label><select id="projectArea" required>${Array.from({length:5},(_,i)=>`<option>Purok ${i+1}</option>`).join("")}<option>Barangay-wide</option></select></div>
+              <div class="field"><label for="projectBudget">Budget (PHP)</label><input id="projectBudget" type="number" min="0" step="100" required></div>
+              <div class="field"><label for="projectStatus">Status</label><select id="projectStatus"><option>Planned</option><option>Approved</option></select></div>
+              <div class="field full"><button class="btn btn-primary" type="submit">Add project</button></div>
+            </form></section>`:""}
+          <section class="card"><h4 class="card-title">Programs, Projects & Activities <small>${data.projects.length} project${data.projects.length===1?"":"s"}</small></h4>
+            <div class="table-wrap"><table><thead><tr><th>Project title</th><th>Category</th><th>Target area</th><th>Budget (PHP)</th><th>Source</th><th>Status</th>${canManage()?"<th>Update status</th>":""}${isAdmin()?"<th>Action</th>":""}</tr></thead><tbody>
+            ${data.projects.length?data.projects.map(project=>`<tr><td><strong>${esc(project.title)}</strong>${project.budgetRange?`<div class="muted small">Estimate: ${esc(project.budgetRange)}</div>`:""}</td>
+              <td>${esc(project.category)}</td><td>${esc(project.area)}</td><td>${money(project.budget)}</td>
+              <td><span class="badge ${project.source==="AI Recommendation"?"badge-blue":""}">${esc(project.source)}</span></td>
+              <td><span class="badge ${project.status==="Completed"?"badge-green":project.status==="Approved"?"badge-blue":"badge-amber"}">${esc(project.status)}</span></td>
+              ${canManage()?`<td><select data-action="project-status" data-id="${esc(project.id)}" aria-label="Change project status"><option ${project.status==="Planned"?"selected":""}>Planned</option><option ${project.status==="Approved"?"selected":""}>Approved</option><option ${project.status==="Completed"?"selected":""}>Completed</option></select></td>`:""}
+              ${isAdmin()?`<td><button class="btn btn-danger btn-small" data-action="delete-project" data-id="${esc(project.id)}">Delete</button></td>`:""}
+            </tr>`).join(""):`<tr><td colspan="${6+(canManage()?1:0)+(isAdmin()?1:0)}" class="empty">No official projects yet.</td></tr>`}
+            </tbody></table></div>
+          </section>`;
+      }
+
+      function renderEvents() {
+        const events=[...data.events].sort((a,b)=>a.date.localeCompare(b.date));
+        return `${pageHeading("Events & Attendance","Discover SK activities, register to attend, and follow participant counts.")}
+          ${canManage()?`<section class="card" style="margin-bottom:16px"><h4 class="card-title">Create an SK event</h4>
+            <form id="eventForm" class="form-grid"><div class="field"><label for="eventName">Event name</label><input id="eventName" required maxlength="120"></div>
+            <div class="field"><label for="eventDate">Date</label><input id="eventDate" type="date" required></div>
+            <div class="field"><label for="eventVenue">Venue</label><input id="eventVenue" required maxlength="120"></div>
+            <div class="field"><label for="eventNotes">Details (optional)</label><input id="eventNotes" maxlength="240"></div>
+            <div class="field full"><button class="btn btn-primary" type="submit">Publish event</button></div></form></section>`:""}
+          <div class="grid two-col">${events.length?events.map(event=>{
+            const joined=event.attendees.includes(currentUser.id);
+            return `<article class="card"><div class="issue-top"><h4 class="card-title" style="margin:0">${esc(event.name)}</h4><span class="badge ${new Date(event.date+"T23:59:59")>=new Date()?"badge-green":""}">${esc(event.date)}</span></div>
+              <p class="muted small">📍 ${esc(event.venue)} · ${event.attendees.length} participant${event.attendees.length===1?"":"s"}</p>
+              ${event.notes?`<p class="small">${esc(event.notes)}</p>`:""}
+              ${currentUser.role===ROLES.youth?`<button type="button" class="btn ${joined?"btn-amber":"btn-primary"} btn-small" data-action="join-event" data-id="${esc(event.id)}">${joined?"Cancel registration":"Register / Join"}</button>`:""}
+              ${canManage()?`<details style="margin-top:12px"><summary class="small">Attendance list</summary><p class="small muted">${event.attendees.map(id=>esc(data.users.find(user=>user.id===id)?.name||"Former user")).join(", ")||"No attendees yet."}</p></details>`:""}
+              ${canManage()?`<button type="button" class="btn btn-light btn-small" style="margin-top:10px" data-action="delete-event" data-id="${esc(event.id)}">Delete event</button>`:""}
+            </article>`;
+          }).join(""):`<section class="card empty">No events have been posted yet.</section>`}</div>`;
+      }
+
+      function renderAnnouncements() {
+        const items=[...data.announcements].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+        return `${pageHeading("SK Announcements","Official updates, notices, and information for the Katipunan ng Kabataan.")}
+          ${canManage()?`<section class="card" style="margin-bottom:16px"><h4 class="card-title">Publish an announcement</h4>
+            <form id="announcementForm"><div class="field"><label for="announcementTitle">Title</label><input id="announcementTitle" required maxlength="120"></div>
+            <div class="field" style="margin-top:11px"><label for="announcementBody">Message</label><textarea id="announcementBody" required maxlength="1200"></textarea></div>
+            <button class="btn btn-primary" type="submit" style="margin-top:12px">Publish announcement</button></form></section>`:""}
+          <div class="feed">${items.length?items.map(item=>`<article class="card"><div class="issue-top"><h4 class="card-title" style="margin:0">${esc(item.title)}</h4><span class="muted small">${new Date(item.createdAt).toLocaleString()}</span></div>
+            <p style="white-space:pre-wrap;line-height:1.6;font-size:13px">${esc(item.body)}</p><div class="muted small">Published by ${esc(item.authorName)}</div>
+            ${canManage()?`<button class="btn btn-light btn-small" style="margin-top:10px" data-action="delete-announcement" data-id="${esc(item.id)}">Delete</button>`:""}</article>`).join(""):`<div class="card empty">No announcements yet.</div>`}</div>`;
+      }
+
+      function renderOfficials() {
+        const officials=data.users.filter(user=>[ROLES.admin,ROLES.kagawad].includes(user.role))
+          .sort((a,b)=>a.role===ROLES.admin?-1:b.role===ROLES.admin?1:a.name.localeCompare(b.name));
+        return `${pageHeading("SK Officials & Committees Directory","Find registered SK officials and their assigned committees.")}
+          <section class="card"><h4 class="card-title">Officials roster <small>${officials.length} official${officials.length===1?"":"s"}</small></h4>
+          ${officials.length?officials.map(user=>`<div class="official-card"><div class="avatar">${esc(user.name.split(/\s+/).slice(0,2).map(part=>part[0]||"").join("").toUpperCase())}</div>
+            <div><strong>${esc(user.name)}</strong><div class="small muted">${esc(user.role)} · ${esc(user.committee||"Committee not specified")}</div><div class="small muted">${esc(user.purok)}</div></div></div>`).join(""):`<div class="empty">No SK officials are registered yet.</div>`}</section>`;
+      }
+
+      function renderActivities() {
+        return `${pageHeading("Committee Activities","Record and follow committee-led meetings, outreach, and follow-up actions.")}
+          ${canManage()?`<section class="card" style="margin-bottom:16px"><h4 class="card-title">Record a committee activity</h4>
+            <form id="activityForm" class="form-grid"><div class="field"><label for="activityTitle">Activity</label><input id="activityTitle" required maxlength="120"></div>
+            <div class="field"><label for="activityCommittee">Committee</label><select id="activityCommittee">${CATEGORIES.map(c=>`<option>${esc(c.name)}</option>`).join("")}</select></div>
+            <div class="field"><label for="activityDate">Date</label><input id="activityDate" type="date" required></div>
+            <div class="field"><label for="activityStatus">Status</label><select id="activityStatus"><option>Planned</option><option>Ongoing</option><option>Completed</option></select></div>
+            <div class="field full"><label for="activityNotes">Notes</label><textarea id="activityNotes" maxlength="500"></textarea></div>
+            <div class="field full"><button class="btn btn-primary" type="submit">Save activity</button></div></form></section>`:""}
+          <section class="card"><h4 class="card-title">Committee activity log</h4><div class="table-wrap"><table><thead><tr><th>Activity</th><th>Committee</th><th>Date</th><th>Status</th><th>Recorded by</th>${canManage()?"<th>Action</th>":""}</tr></thead><tbody>
+          ${data.activities.length?[...data.activities].sort((a,b)=>b.date.localeCompare(a.date)).map(item=>`<tr><td><strong>${esc(item.title)}</strong><div class="muted small">${esc(item.notes)}</div></td><td>${esc(item.committee)}</td><td>${esc(item.date)}</td><td><span class="badge ${item.status==="Completed"?"badge-green":item.status==="Ongoing"?"badge-blue":"badge-amber"}">${esc(item.status)}</span></td><td>${esc(item.authorName)}</td>
+          ${canManage()?`<td><button class="btn btn-light btn-small" data-action="delete-activity" data-id="${esc(item.id)}">Delete</button></td>`:""}</tr>`).join(""):`<tr><td colspan="${canManage()?6:5}" class="empty">No committee activities have been recorded.</td></tr>`}
+          </tbody></table></div></section>`;
+      }
+
+      function renderReports() {
+        const totalBudget=data.projects.reduce((sum,project)=>sum+Number(project.budget||0),0);
+        const completed=data.projects.filter(project=>project.status==="Completed").length;
+        return `${pageHeading("Reports & Transparency Export","Printable summary of youth, issues, events, projects, and budget.")}
+          <section class="card"><h4 class="card-title">Barangay SK summary</h4><p class="muted small">Generated ${new Date().toLocaleString()}</p>
+            <div class="grid stats">${stat("Registered youth",data.users.filter(user=>user.role===ROLES.youth).length,"♙")}${stat("Community issues",data.issues.length,"⌕")}
+              ${stat("Upcoming events",data.events.filter(event=>new Date(event.date+"T23:59:59")>=new Date()).length,"◷")}${stat("Total project budget",money(totalBudget),"₱")}</div>
+            <div class="table-wrap"><table><thead><tr><th>Project</th><th>Category</th><th>Area</th><th>Budget</th><th>Source</th><th>Status</th></tr></thead><tbody>
+              ${data.projects.length?data.projects.map(project=>`<tr><td>${esc(project.title)}</td><td>${esc(project.category)}</td><td>${esc(project.area)}</td><td>${money(project.budget)}</td><td>${esc(project.source)}</td><td>${esc(project.status)}</td></tr>`).join(""):`<tr><td colspan="6" class="empty">No projects to report.</td></tr>`}
+            </tbody></table></div>
+            <p class="small muted">Projects: ${data.projects.length} · Completed: ${completed} · Issues: ${data.issues.length} · Announcements: ${data.announcements.length}</p>
+            <button class="btn btn-primary no-print" data-action="print-report">Print / Export Summary Report</button>
+          </section>`;
+      }
+
+      function bindPage() {
+        const content=document.getElementById("content");
+        document.getElementById("navList").onclick=event=>{
+          const button=event.target.closest("[data-page]");
+          if(button){activePage=button.dataset.page;document.getElementById("sidebar").classList.remove("open");renderApp();}
+        };
+        content.onsubmit=event=>{
+          event.preventDefault();
+          const form=event.target;
+          if(form.id==="analyzeForm"){
+            const text=document.getElementById("issueInput").value.trim();
+            if(!text)return;
+            const category=detectCategory(text);
+            latestAnalysis={text,category,recommendation:makeRecommendation(text,category,currentUser.purok)};
+            document.getElementById("analysisResult").innerHTML=renderAnalysis(latestAnalysis);
+          } else if(form.id==="projectForm") submitProject();
+          else if(form.id==="eventForm") submitEvent();
+          else if(form.id==="announcementForm") submitAnnouncement();
+          else if(form.id==="activityForm") submitActivity();
+        };
+        content.onclick=event=>{
+          const goto=event.target.closest("[data-goto]");
+          if(goto){activePage=goto.dataset.goto;renderApp();setTimeout(()=>document.getElementById("issueInput")?.focus(),0);return;}
+          const button=event.target.closest("[data-action]");
+          if(button&&button.tagName!=="SELECT")handleAction(button.dataset.action,button.dataset.id);
+        };
+        content.onchange=event=>{
+          const target=event.target;
+          if(target.matches('[data-action="project-status"]'))updateProjectStatus(target.dataset.id,target.value);
+          if(target.id==="categoryFilter"){categoryFilterValue=target.value;refreshFinderFeed();}
+          if(target.id==="youthPurokFilter"||target.id==="youthSearch")filterYouth();
+        };
+        content.oninput=event=>{
+          if(event.target.id==="issueSearch"){issueFilter=event.target.value;filterIssues();}
+          if(event.target.id==="youthSearch")filterYouth();
+        };
+      }
+      function filterIssues() {
+        const term=issueFilter.toLowerCase();
+        document.querySelectorAll("#issueFeed .issue-card").forEach(card=>{
+          const text=card.textContent.toLowerCase();
+          const selected=categoryFilterValue;
+          const category=card.querySelector(".badge-blue")?.textContent||"";
+          card.classList.toggle("hidden",!text.includes(term)||(selected&&category!==selected));
+        });
+      }
+      function refreshFinderFeed() {
+        const scroll=window.scrollY;
+        document.getElementById("content").innerHTML=renderFinder();
+        bindPage();
+        window.scrollTo(0,scroll);
+      }
+      function filterYouth() {
+        const term=(document.getElementById("youthSearch")?.value||"").toLowerCase();
+        const purok=document.getElementById("youthPurokFilter")?.value||"";
+        document.querySelectorAll("[data-youth-row]").forEach(row=>{
+          row.classList.toggle("hidden",!row.dataset.name.includes(term)||Boolean(purok&&row.dataset.purok!==purok));
+        });
+      }
+
+      function submitProject() {
+        if(!isAdmin())return notify("Only the SK Chairperson / Admin can add official projects.");
+        data.projects.push({
+          id:uid(),title:document.getElementById("projectTitle").value.trim(),
+          category:document.getElementById("projectCategory").value,area:document.getElementById("projectArea").value,
+          budget:Number(document.getElementById("projectBudget").value),status:document.getElementById("projectStatus").value,
+          source:"Manual Entry",createdAt:new Date().toISOString()
+        });
+        saveData();notify("Official project added.");renderApp();
+      }
+      function submitEvent() {
+        if(!canManage())return notify("You do not have permission to create events.");
+        data.events.push({
+          id:uid(),name:document.getElementById("eventName").value.trim(),date:document.getElementById("eventDate").value,
+          venue:document.getElementById("eventVenue").value.trim(),notes:document.getElementById("eventNotes").value.trim(),
+          attendees:[],createdBy:currentUser.id
+        });
+        saveData();notify("Event published.");renderApp();
+      }
+      function submitAnnouncement() {
+        if(!canManage())return notify("You do not have permission to publish announcements.");
+        data.announcements.push({
+          id:uid(),title:document.getElementById("announcementTitle").value.trim(),
+          body:document.getElementById("announcementBody").value.trim(),authorName:currentUser.name,createdAt:new Date().toISOString()
+        });
+        saveData();notify("Announcement published.");renderApp();
+      }
+      function submitActivity() {
+        if(!canManage())return notify("You do not have permission to manage committee activities.");
+        data.activities.push({
+          id:uid(),title:document.getElementById("activityTitle").value.trim(),
+          committee:document.getElementById("activityCommittee").value,date:document.getElementById("activityDate").value,
+          status:document.getElementById("activityStatus").value,notes:document.getElementById("activityNotes").value.trim(),
+          authorName:currentUser.name
+        });
+        saveData();notify("Committee activity saved.");renderApp();
+      }
+
+      function handleAction(action,id) {
+        if(action==="upvote"){
+          const issue=data.issues.find(item=>item.id===id);if(!issue)return;
+          issue.upvotes=issue.upvotes||[];
+          issue.upvotes=issue.upvotes.includes(currentUser.id)?issue.upvotes.filter(userId=>userId!==currentUser.id):[...issue.upvotes,currentUser.id];
+          saveData();renderApp();
+        } else if(action==="post-issue"){
+          if(!latestAnalysis)return notify("Analyze an issue before posting it.");
+          const duplicate=data.issues.some(issue=>issue.authorId===currentUser.id&&issue.text.toLowerCase()===latestAnalysis.text.toLowerCase());
+          if(duplicate)return notify("You have already posted this exact issue.");
+          data.issues.push({id:uid(),text:latestAnalysis.text,category:latestAnalysis.category,purok:currentUser.purok,
+            authorId:currentUser.id,authorName:currentUser.name,upvotes:[],createdAt:new Date().toISOString()});
+          saveData();notify("Issue posted to the community feed.");renderApp();
+        } else if(action==="adopt-analysis"){
+          if(!isAdmin())return notify("Only the SK Chairperson / Admin can adopt AI recommendations.");
+          if(!latestAnalysis)return notify("Analyze an issue first.");
+          const rec=latestAnalysis.recommendation;
+          data.projects.push({id:uid(),title:rec.title,category:latestAnalysis.category,area:rec.affected,budget:0,
+            budgetRange:rec.budget,source:"AI Recommendation",status:"Planned",issueText:latestAnalysis.text,createdAt:new Date().toISOString()});
+          saveData();notify("Recommendation added to the official PPA as a planned project.");renderApp();
+        } else if(action==="join-event"){
+          if(currentUser.role!==ROLES.youth)return notify("Only Youth Members can register for events.");
+          const event=data.events.find(item=>item.id===id);if(!event)return;
+          event.attendees=event.attendees||[];
+          event.attendees=event.attendees.includes(currentUser.id)?event.attendees.filter(userId=>userId!==currentUser.id):[...event.attendees,currentUser.id];
+          saveData();renderApp();
+        } else if(action==="verify-user"){
+          if(!isAdmin())return notify("Only the SK Chairperson / Admin can verify youth accounts.");
+          const user=data.users.find(item=>item.id===id);
+          if(user){user.verified=true;saveData();notify("Youth account verified.");renderApp();}
+        } else if(action==="print-report"){
+          if(!isAdmin())return notify("Only the SK Chairperson / Admin can export official reports.");
+          window.print();
+        } else if(action==="delete-project"||action==="delete-event"||action==="delete-announcement"||action==="delete-activity"||action==="delete-issue"){
+          const allowed=action==="delete-project"||action==="delete-issue"?isAdmin():canManage();
+          if(!allowed)return notify("You do not have permission to delete this record.");
+          if(!confirm("Delete this record? This action cannot be undone."))return;
+          const collection={
+            "delete-project":"projects","delete-event":"events","delete-announcement":"announcements",
+            "delete-activity":"activities","delete-issue":"issues"
+          }[action];
+          data[collection]=data[collection].filter(item=>item.id!==id);
+          saveData();notify("Record deleted.");renderApp();
+        }
+      }
+      function updateProjectStatus(id,status) {
+        if(!canManage())return notify("You do not have permission to update project status.");
+        if(!["Planned","Approved","Completed"].includes(status))return;
+        const project=data.projects.find(item=>item.id===id);
+        if(project){project.status=status;saveData();notify("Project status updated.");renderApp();}
+      }
+    })();
+  </script>
+</body>
+</html>
